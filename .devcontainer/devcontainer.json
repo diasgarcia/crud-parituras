@@ -1,0 +1,21 @@
+{
+  "name": "CRUD de Parituras",
+
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "forwardPorts": [8080, 3306],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "java.server.launchMode": "Standard"
+      }
+    }
+  },
+
+  "postCreateCommand": "/bin/bash .devcontainer/init-mysql.sh",
+
+  "postStartCommand": "service mysql start"
+}
