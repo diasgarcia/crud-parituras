@@ -1,0 +1,16 @@
+[project]
+name = "mcp-partituras"
+version = "0.1.0"
+description = "MCP para o catálogo de partituras e registros de estudo"
+requires-python = ">=3.13"
+dependencies = [
+    "fastmcp>=3,<4",
+    "httpx>=0.28.1,<1",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["partituras_api"]

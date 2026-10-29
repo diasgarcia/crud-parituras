@@ -75,3 +75,9 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# PYTHON
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
