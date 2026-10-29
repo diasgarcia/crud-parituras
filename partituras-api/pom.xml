@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.partituras</groupId>
-	<artifactId>partituras</artifactId>
+	<artifactId>partituras-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>partituras</name>
+	<name>partituras-api</name>
 	<description/>
 	<url/>
 	<licenses>
