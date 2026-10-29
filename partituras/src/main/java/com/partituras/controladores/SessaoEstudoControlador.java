@@ -99,6 +99,17 @@ public class SessaoEstudoControlador {
         return sessaoEstudoRepositorio.buscarPorCompositor(compositorId);
     }
 
+    @GetMapping("/partitura/{partituraId}/total-minutos")
+    public Long totalMinutosPorPartitura(@PathVariable Long partituraId) {
+
+        if (!partituraRepositorio.existsById(partituraId)) {
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Partitura não encontrada");
+        }
+
+        return sessaoEstudoRepositorio.totalMinutosPorPartitura(partituraId);
+    }
+
     private Partitura validarEObterPartitura(SessaoEstudo sessao) {
 
         if (sessao.getData() == null) {
