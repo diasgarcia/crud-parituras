@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.partituras.entidades.Partitura;
 import com.partituras.entidades.SessaoEstudo;
+import com.partituras.repositorios.CompositorRepositorio;
 import com.partituras.repositorios.PartituraRepositorio;
 import com.partituras.repositorios.SessaoEstudoRepositorio;
 
@@ -25,11 +26,13 @@ public class SessaoEstudoControlador {
 
     private final SessaoEstudoRepositorio sessaoEstudoRepositorio;
     private final PartituraRepositorio partituraRepositorio;
+    private final CompositorRepositorio compositorRepositorio;
 
-    public SessaoEstudoControlador(SessaoEstudoRepositorio sessaoEstudoRepositorio, PartituraRepositorio partituraRepositorio) {
+    public SessaoEstudoControlador(SessaoEstudoRepositorio sessaoEstudoRepositorio, PartituraRepositorio partituraRepositorio, CompositorRepositorio compositorRepositorio) {
 
         this.sessaoEstudoRepositorio = sessaoEstudoRepositorio;
         this.partituraRepositorio = partituraRepositorio;
+        this.compositorRepositorio = compositorRepositorio;
     }
 
     @GetMapping
@@ -83,6 +86,17 @@ public class SessaoEstudoControlador {
     public void excluir(@PathVariable Long id) {
 
         sessaoEstudoRepositorio.delete(buscar(id));
+    }
+
+    @GetMapping("/compositor/{compositorId}")
+    public List<SessaoEstudo> buscarPorCompositor(@PathVariable Long compositorId) {
+
+        if (!compositorRepositorio.existsById(compositorId)) {
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compositor não encontrado");
+        }
+
+        return sessaoEstudoRepositorio.buscarPorCompositor(compositorId);
     }
 
     private Partitura validarEObterPartitura(SessaoEstudo sessao) {
