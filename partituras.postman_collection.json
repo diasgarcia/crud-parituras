@@ -1,0 +1,688 @@
+{
+  "info": {
+    "_postman_id": "90264c91-7378-44f6-809c-2ebd8ac395f7",
+    "name": "Partituras — API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Todos os 17 endpoints da API Spring, com testes de caminho feliz. Configure api_url e os IDs nas variáveis da coleção. Cada chamada executa apenas a operação indicada no título; não há preparação, troca automática de IDs ou limpeza de registros. Os IDs iniciais são 1, conforme import.sql. Para excluir compositor ou partitura, remova antes os registros vinculados.\n\nO MCP é conectado separadamente na interface MCP nativa do Postman: HTTP, endereço http://localhost:8000/mcp, depois Connect/Load Capabilities. Inicie-o com python partituras-mcp/mcp.py."
+  },
+  "variable": [
+    {
+      "key": "api_url",
+      "value": "http://localhost:8080",
+      "description": "Endereço da API Spring.",
+      "type": "string"
+    },
+    {
+      "key": "compositor_id",
+      "value": "1",
+      "description": "ID usado nas consultas/alterações/exclusões e no vínculo da partitura. Altere para o registro desejado.",
+      "type": "string"
+    },
+    {
+      "key": "partitura_id",
+      "value": "1",
+      "description": "ID usado nas consultas/alterações/exclusões e no vínculo do estudo. Altere para o registro desejado.",
+      "type": "string"
+    },
+    {
+      "key": "sessao_id",
+      "value": "1",
+      "description": "ID da sessão de estudo a consultar, alterar ou excluir.",
+      "type": "string"
+    },
+    {
+      "key": "compositor_nome",
+      "value": "Claude Debussy",
+      "description": "Nome enviado no cadastro e na atualização do compositor.",
+      "type": "string"
+    },
+    {
+      "key": "partitura_titulo",
+      "value": "Clair de Lune",
+      "description": "Título enviado no cadastro e na atualização da partitura.",
+      "type": "string"
+    },
+    {
+      "key": "instrumento",
+      "value": "Piano",
+      "description": "Instrumento da partitura.",
+      "type": "string"
+    },
+    {
+      "key": "dificuldade",
+      "value": "Intermediária",
+      "description": "Dificuldade da partitura.",
+      "type": "string"
+    },
+    {
+      "key": "status_partitura",
+      "value": "Em andamento",
+      "description": "Status da partitura.",
+      "type": "string"
+    },
+    {
+      "key": "caminho_pdf",
+      "value": "https://imslp.org/wiki/Special:ImagefromIndex/318757",
+      "description": "Link de uma partitura no IMSLP; substitua pelo PDF correspondente ao título informado.",
+      "type": "string"
+    },
+    {
+      "key": "data_estudo",
+      "value": "2026-10-29",
+      "description": "Data do estudo no formato AAAA-MM-DD.",
+      "type": "string"
+    },
+    {
+      "key": "minutos_estudo",
+      "value": "25",
+      "description": "Duração do estudo em minutos, maior que zero.",
+      "type": "string"
+    },
+    {
+      "key": "observacoes_estudo",
+      "value": "Estudo das primeiras passagens com metrônomo.",
+      "description": "Observações da sessão de estudo.",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "API",
+      "description": "Operações REST. Os testes apenas verificam a resposta da própria chamada.",
+      "item": [
+        {
+          "name": "Listar compositores",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/compositores",
+            "description": "Consulta os registros existentes.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna uma lista\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar compositor por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/compositores/{{compositor_id}}",
+            "description": "Consulta o registro informado em {{compositor_id}}. Não cria nem exclui registros.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Retorna o ID informado\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.variables.get(\"compositor_id\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cadastrar compositor",
+          "request": {
+            "method": "POST",
+            "url": "{{api_url}}/compositores",
+            "description": "Cadastra somente o registro descrito no corpo e mantém o cadastro no banco. Para as próximas operações, copie o ID retornado para a variável correspondente.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{compositor_nome}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Dados correspondem ao corpo enviado\", () => {",
+                  "    const esperado = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "    const recebido = pm.response.json();",
+                  "    for (const [campo, valor] of Object.entries(esperado)) {",
+                  "        if (campo === \"compositor\" || campo === \"partitura\") pm.expect(recebido[campo].id).to.eql(valor.id);",
+                  "        else pm.expect(recebido[campo]).to.deep.eql(valor);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar compositor",
+          "request": {
+            "method": "PUT",
+            "url": "{{api_url}}/compositores/{{compositor_id}}",
+            "description": "Atualiza o registro informado em {{compositor_id}} com o corpo completo desta chamada.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"{{compositor_nome}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Retorna o ID informado\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.variables.get(\"compositor_id\"))));",
+                  "pm.test(\"Dados correspondem ao corpo enviado\", () => {",
+                  "    const esperado = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "    const recebido = pm.response.json();",
+                  "    for (const [campo, valor] of Object.entries(esperado)) {",
+                  "        if (campo === \"compositor\" || campo === \"partitura\") pm.expect(recebido[campo].id).to.eql(valor.id);",
+                  "        else pm.expect(recebido[campo]).to.deep.eql(valor);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir compositor",
+          "request": {
+            "method": "DELETE",
+            "url": "{{api_url}}/compositores/{{compositor_id}}",
+            "description": "Exclui o registro informado em {{compositor_id}}. O compositor deve estar sem partituras vinculadas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Resposta sem conteúdo\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar partituras",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/partituras",
+            "description": "Consulta os registros existentes.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna uma lista\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar partitura por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/partituras/{{partitura_id}}",
+            "description": "Consulta o registro informado em {{partitura_id}}. Não cria nem exclui registros.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Retorna o ID informado\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.variables.get(\"partitura_id\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cadastrar partitura",
+          "request": {
+            "method": "POST",
+            "url": "{{api_url}}/partituras",
+            "description": "Cadastra somente o registro descrito no corpo e mantém o cadastro no banco. Para as próximas operações, copie o ID retornado para a variável correspondente. O registro relacionado informado no corpo deve existir.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"{{partitura_titulo}}\",\n  \"instrumento\": \"{{instrumento}}\",\n  \"dificuldade\": \"{{dificuldade}}\",\n  \"status\": \"{{status_partitura}}\",\n  \"caminhoPdf\": \"{{caminho_pdf}}\",\n  \"compositor\": {\n    \"id\": {{compositor_id}}\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Dados correspondem ao corpo enviado\", () => {",
+                  "    const esperado = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "    const recebido = pm.response.json();",
+                  "    for (const [campo, valor] of Object.entries(esperado)) {",
+                  "        if (campo === \"compositor\" || campo === \"partitura\") pm.expect(recebido[campo].id).to.eql(valor.id);",
+                  "        else pm.expect(recebido[campo]).to.deep.eql(valor);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar partitura",
+          "request": {
+            "method": "PUT",
+            "url": "{{api_url}}/partituras/{{partitura_id}}",
+            "description": "Atualiza o registro informado em {{partitura_id}} com o corpo completo desta chamada. O registro relacionado informado no corpo deve existir.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"{{partitura_titulo}}\",\n  \"instrumento\": \"{{instrumento}}\",\n  \"dificuldade\": \"{{dificuldade}}\",\n  \"status\": \"{{status_partitura}}\",\n  \"caminhoPdf\": \"{{caminho_pdf}}\",\n  \"compositor\": {\n    \"id\": {{compositor_id}}\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Retorna o ID informado\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.variables.get(\"partitura_id\"))));",
+                  "pm.test(\"Dados correspondem ao corpo enviado\", () => {",
+                  "    const esperado = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "    const recebido = pm.response.json();",
+                  "    for (const [campo, valor] of Object.entries(esperado)) {",
+                  "        if (campo === \"compositor\" || campo === \"partitura\") pm.expect(recebido[campo].id).to.eql(valor.id);",
+                  "        else pm.expect(recebido[campo]).to.deep.eql(valor);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir partitura",
+          "request": {
+            "method": "DELETE",
+            "url": "{{api_url}}/partituras/{{partitura_id}}",
+            "description": "Exclui o registro informado em {{partitura_id}}. A partitura deve estar sem sessões de estudo vinculadas.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Resposta sem conteúdo\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar sessões de estudo",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/sessoes-estudo",
+            "description": "Consulta os registros existentes.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna uma lista\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar sessão de estudo por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/sessoes-estudo/{{sessao_id}}",
+            "description": "Consulta o registro informado em {{sessao_id}}. Não cria nem exclui registros.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Retorna o ID informado\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.variables.get(\"sessao_id\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cadastrar sessão de estudo",
+          "request": {
+            "method": "POST",
+            "url": "{{api_url}}/sessoes-estudo",
+            "description": "Cadastra somente o registro descrito no corpo e mantém o cadastro no banco. Para as próximas operações, copie o ID retornado para a variável correspondente. O registro relacionado informado no corpo deve existir.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partitura\": {\n    \"id\": {{partitura_id}}\n  },\n  \"data\": \"{{data_estudo}}\",\n  \"minutos\": {{minutos_estudo}},\n  \"observacoes\": \"{{observacoes_estudo}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Dados correspondem ao corpo enviado\", () => {",
+                  "    const esperado = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "    const recebido = pm.response.json();",
+                  "    for (const [campo, valor] of Object.entries(esperado)) {",
+                  "        if (campo === \"compositor\" || campo === \"partitura\") pm.expect(recebido[campo].id).to.eql(valor.id);",
+                  "        else pm.expect(recebido[campo]).to.deep.eql(valor);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Atualizar sessão de estudo",
+          "request": {
+            "method": "PUT",
+            "url": "{{api_url}}/sessoes-estudo/{{sessao_id}}",
+            "description": "Atualiza o registro informado em {{sessao_id}} com o corpo completo desta chamada. O registro relacionado informado no corpo deve existir.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partitura\": {\n    \"id\": {{partitura_id}}\n  },\n  \"data\": \"{{data_estudo}}\",\n  \"minutos\": {{minutos_estudo}},\n  \"observacoes\": \"{{observacoes_estudo}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registro possui ID\", () => pm.expect(pm.response.json().id).to.be.a(\"number\").and.above(0));",
+                  "pm.test(\"Retorna o ID informado\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.variables.get(\"sessao_id\"))));",
+                  "pm.test(\"Dados correspondem ao corpo enviado\", () => {",
+                  "    const esperado = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "    const recebido = pm.response.json();",
+                  "    for (const [campo, valor] of Object.entries(esperado)) {",
+                  "        if (campo === \"compositor\" || campo === \"partitura\") pm.expect(recebido[campo].id).to.eql(valor.id);",
+                  "        else pm.expect(recebido[campo]).to.deep.eql(valor);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Excluir sessão de estudo",
+          "request": {
+            "method": "DELETE",
+            "url": "{{api_url}}/sessoes-estudo/{{sessao_id}}",
+            "description": "Exclui o registro informado em {{sessao_id}}.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Resposta sem conteúdo\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar estudos por compositor (JOIN)",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/sessoes-estudo/compositor/{{compositor_id}}",
+            "description": "Consulta os estudos vinculados ao compositor informado em {{compositor_id}}, usando o JOIN da API.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna uma lista\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));",
+                  "pm.test(\"Estudos pertencem ao compositor informado\", () => pm.response.json().forEach(s => pm.expect(s.partitura.compositor.id).to.eql(Number(pm.variables.get(\"compositor_id\")))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar total de minutos por partitura (SUM)",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/sessoes-estudo/partitura/{{partitura_id}}/total-minutos",
+            "description": "Consulta a soma de minutos estudados da partitura informada em {{partitura_id}}.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Total de minutos válido\", () => pm.expect(pm.response.json()).to.be.a(\"number\").and.at.least(0));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
