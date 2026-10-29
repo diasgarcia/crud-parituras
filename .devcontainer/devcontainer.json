@@ -1,29 +1,29 @@
 {
   "name": "partituras-api",
+
   "build": {
     "dockerfile": "Dockerfile"
   },
+
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.13",
       "installTools": false
     }
   },
-  "forwardPorts": [
-    8080,
-    8000,
-    3306
-  ],
+
+  "forwardPorts": [8080, 8000, 3306],
+
   "customizations": {
     "vscode": {
-      "extensions": [
-        "vscjava.vscode-java-pack"
-      ],
+      "extensions": ["vscjava.vscode-java-pack"],
       "settings": {
         "java.server.launchMode": "Standard"
       }
     }
   },
-  "postCreateCommand": "/bin/bash .devcontainer/init-mysql.sh",
+
+  "postCreateCommand": "/bin/bash .devcontainer/init-mysql.sh && python -m pip install -e ./partituras-mcp && mvn -B -f partituras-api/pom.xml -DskipTests package",
+
   "postStartCommand": "service mysql start"
 }
