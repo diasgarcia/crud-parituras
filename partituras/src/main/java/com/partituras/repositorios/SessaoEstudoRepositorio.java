@@ -21,4 +21,10 @@ public interface SessaoEstudoRepositorio extends JpaRepository<SessaoEstudo, Lon
             """)
     List<SessaoEstudo> buscarPorCompositor(@Param("compositorId") Long compositorId);
 
+    @Query("""
+            SELECT COALESCE(SUM(s.minutos), 0)
+            FROM SessaoEstudo s
+            WHERE s.partitura.id = :partituraId
+            """)
+    Long totalMinutosPorPartitura(@Param("partituraId") Long partituraId);
 }
