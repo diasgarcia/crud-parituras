@@ -22,14 +22,14 @@ fi
 
 echo "Configurando banco..."
 
-mysql <<EOF
-CREATE DATABASE IF NOT EXISTS ecommerce
+mysql <<'EOF'
+CREATE DATABASE IF NOT EXISTS `mcp-partituras`
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 CREATE USER IF NOT EXISTS 'rafael'@'%' IDENTIFIED BY 'q1w2e3';
 
-GRANT ALL PRIVILEGES ON ecommerce.* TO 'rafael'@'%';
+GRANT ALL PRIVILEGES ON `mcp-partituras`.* TO 'rafael'@'%';
 
 FLUSH PRIVILEGES;
 EOF
