@@ -3,7 +3,7 @@
     "_postman_id": "90264c91-7378-44f6-809c-2ebd8ac395f7",
     "name": "Partituras — API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Todos os 17 endpoints da API Spring, com testes de caminho feliz. Configure api_url e os IDs nas variáveis da coleção. Cada chamada executa apenas a operação indicada no título; não há preparação, troca automática de IDs ou limpeza de registros. Os IDs iniciais são 1, conforme import.sql. Para excluir compositor ou partitura, remova antes os registros vinculados.\n\nO MCP é conectado separadamente na interface MCP nativa do Postman: HTTP, endereço http://localhost:8000/mcp, depois Connect/Load Capabilities. Inicie-o com python partituras-mcp/mcp.py."
+    "description": "Todos os 17 endpoints da API Spring, com testes de caminho feliz. Configure api_url e os IDs nas variáveis da coleção. Cada chamada executa apenas a operação indicada no título; não há preparação, troca automática de IDs ou limpeza de registros. Os IDs iniciais são 1, conforme import.sql. Para excluir compositor ou partitura, remova antes os registros vinculados.\n\nO MCP é conectado separadamente na interface MCP nativa do Postman: HTTP, endereço http://localhost:8000/mcp, depois Connect/Load Capabilities. Inicie-o com python partituras-mcp/partituras_mcp.py."
   },
   "variable": [
     {
