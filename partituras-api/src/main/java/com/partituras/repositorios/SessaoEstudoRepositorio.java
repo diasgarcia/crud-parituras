@@ -12,19 +12,19 @@ public interface SessaoEstudoRepositorio extends JpaRepository<SessaoEstudo, Lon
 
     boolean existsByPartituraId(Long partituraId);
 
-    @Query("""
-            SELECT s
-            FROM SessaoEstudo s
-            JOIN s.partitura p
-            JOIN p.compositor c
+    @Query(value = """
+            SELECT s.*
+            FROM sessoes_estudo s
+            JOIN partituras p ON p.id = s.partitura_id
+            JOIN compositores c ON c.id = p.compositor_id
             WHERE c.id = :compositorId
-            """)
+            """, nativeQuery = true)
     List<SessaoEstudo> buscarPorCompositor(@Param("compositorId") Long compositorId);
 
-    @Query("""
+    @Query(value = """
             SELECT COALESCE(SUM(s.minutos), 0)
-            FROM SessaoEstudo s
-            WHERE s.partitura.id = :partituraId
-            """)
+            FROM sessoes_estudo s
+            WHERE s.partitura_id = :partituraId
+            """, nativeQuery = true)
     Long totalMinutosPorPartitura(@Param("partituraId") Long partituraId);
 }
