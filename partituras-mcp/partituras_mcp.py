@@ -120,7 +120,20 @@ def cadastrar_partitura(
     status: str | None = None,
     caminho_pdf: str | None = None,
 ) -> Partitura:
-    """Cadastra uma partitura vinculada a um compositor existente."""
+    """Cadastra uma partitura vinculada a um compositor existente.
+
+    Para preencher caminho_pdf, identifique a obra pelo título e compositor:
+    - Se a obra não puder ser identificada com segurança, use None.
+    - Se a obra foi identificada e o usuário enviou um link, salve esse link
+      exatamente como foi informado.
+    - Se a obra foi identificada e o usuário não enviou um link, use a pesquisa
+      e navegação disponíveis no cliente para encontrar um PDF ou link de download
+      em um repositório de partituras públicas, preferencialmente o IMSLP.
+      Confira se o link corresponde à obra e ao compositor antes de salvá-lo.
+    - Se o usuário pedir para deixar sem PDF, respeite o pedido e use None.
+      Se não houver pesquisa disponível ou um link confirmado, use None e informe
+      que não foi possível obter o PDF. Nunca invente um endereço.
+    """
     return requisicao("POST", "/partituras", Partitura, {
         "titulo": titulo,
         "compositor": {"id": compositor_id},
@@ -141,7 +154,20 @@ def atualizar_partitura(
     status: str | None = None,
     caminho_pdf: str | None = None,
 ) -> Partitura:
-    """Substitui os dados da partitura. Campos opcionais omitidos ficam nulos."""
+    """Substitui os dados da partitura. Campos opcionais omitidos ficam nulos.
+
+    Para preencher caminho_pdf, identifique a obra pelo título e compositor:
+    - Se a obra não puder ser identificada com segurança, use None.
+    - Se a obra foi identificada e o usuário enviou um link, salve esse link
+      exatamente como foi informado.
+    - Se a obra foi identificada e o usuário não enviou um link, use a pesquisa
+      e navegação disponíveis no cliente para encontrar um PDF ou link de download
+      em um repositório de partituras públicas, preferencialmente o IMSLP.
+      Confira se o link corresponde à obra e ao compositor antes de salvá-lo.
+    - Se o usuário pedir para deixar sem PDF, respeite o pedido e use None.
+      Se não houver pesquisa disponível ou um link confirmado, use None e informe
+      que não foi possível obter o PDF. Nunca invente um endereço.
+    """
     return requisicao("PUT", f"/partituras/{partitura_id}", Partitura, {
         "titulo": titulo,
         "compositor": {"id": compositor_id},
